@@ -7,14 +7,14 @@ import (
 )
 
 func respondWithErrorJson(w http.ResponseWriter, status int, message string) {
-if status > 499 {
-	log.Println("Server error:", message)
-}
- type ErrorResponse struct {
-	Error string `json:"error"`
- }
+	if status > 499 {
+		log.Println("Server error:", message)
+	}
+	type ErrorResponse struct {
+		Error string `json:"error"`
+	}
 
- respondWithJSON(w, status, ErrorResponse{Error: message})
+	respondWithJSON(w, status, ErrorResponse{Error: message})
 
 }
 
@@ -36,7 +36,7 @@ func respondWithJSON(w http.ResponseWriter, status int, payload interface{}) {
 		return
 	}
 	w.Header().Add("Content-Type", "application/json")
-	
+
 	w.WriteHeader(status)
 	w.Write(data)
 }
