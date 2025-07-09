@@ -6,11 +6,16 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/azar-g/rssaggregator/internal/auth"
 	"github.com/azar-g/rssaggregator/internal/database"
 	"github.com/google/uuid"
 )
 
+/**
+ * createUserHandler handles the creation of a new user.
+ * It decodes the request body to extract the user's name, creates a new user in the database,
+ * and responds with the created user's details in JSON format.
+ * If the request body is invalid or if there is an error during user creation, it responds with an appropriate error message.
+ */
 func (apiCfg *apiConfig) createUserHandler(w http.ResponseWriter, r *http.Request) {
 	type Params struct {
 		Name string `json:"name"`
@@ -39,20 +44,11 @@ func (apiCfg *apiConfig) createUserHandler(w http.ResponseWriter, r *http.Reques
 	respondWithJSON(w, http.StatusCreated, databaseUserToUser(user))
 }
 
-func (apiCfg *apiConfig) getUser(w http.ResponseWriter, r *http.Request) {
-	apiKey, err := auth.GetAPIKey(r.Header)
-
-	if err != nil {
-		respondWithJSON(w, http.StatusUnauthorized, fmt.Sprintf("Unauthorized: %v", err))
-		return
-	}
-
-	user, err := apiCfg.DB.GetUserByApiKey(r.Context(), apiKey)
-
-	if err != nil {
-		respondWithErrorJson(w, http.StatusInternalServerError, fmt.Sprintf("Failed to get user: %v", err))
-		return
-	}
+/**
+ * getUser retrieves the user associated with the API key from the request header.
+ * It responds with the user details in JSON format or an error message if the user is not found or if there is an internal server error.
+ */
+func (apiCfg *apiConfig) getUser(w http.ResponseWriter, r *http.Request, user database.User) {
 
 	respondWithJSON(w, http.StatusOK, databaseUserToUser(user))
 }
