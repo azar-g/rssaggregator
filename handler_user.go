@@ -26,7 +26,7 @@ func (apiCfg *apiConfig) createUserHandler(w http.ResponseWriter, r *http.Reques
 	err := decoder.Decode(&params)
 
 	if err != nil {
-		respondWithJSON(w, http.StatusBadRequest, fmt.Sprintf("Invalid request body: %v", err))
+		respondWithErrorJson(w, http.StatusBadRequest, fmt.Sprintf("Invalid request body: %v", err))
 		return
 	}
 

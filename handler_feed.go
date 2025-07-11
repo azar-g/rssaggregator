@@ -25,7 +25,7 @@ func (apiCfg *apiConfig) createUserFeed(w http.ResponseWriter, r *http.Request, 
 	params := Params{}
 	err := decoder.Decode(&params)
 	if err != nil {
-		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		respondWithErrorJson(w, http.StatusBadRequest, fmt.Sprintf("Invalid request body: %v", err))
 		return
 	}
 
@@ -35,14 +35,30 @@ func (apiCfg *apiConfig) createUserFeed(w http.ResponseWriter, r *http.Request, 
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 		Url:       params.Url,
-		UserID:    uuid.NullUUID{UUID: user.ID, Valid: true},
+		UserID:    user.ID,
 	})
 
 	if err != nil {
 		respondWithErrorJson(w, http.StatusInternalServerError, fmt.Sprintf("Failed to create feed: %v", err))
+		return
 	}
 
-	respondWithJSON(w, http.StatusCreated, feed)
+	respondWithJSON(w, http.StatusCreated, databaseFeedToFeed(feed))
+}
+
+func (apiCfg *apiConfig) getAllFeeds(w http.ResponseWriter, r *http.Request) {
+	feeds, err := apiCfg.DB.GetAllFeeds(r.Context())
+	if err != nil {
+		respondWithErrorJson(w, http.StatusInternalServerError, fmt.Sprintf("Failed to retrieve feeds: %v", err))
+		return
+	}
+
+	feedList := []Feed{}
+	for _, feed := range feeds {
+		feedList = append(feedList, databaseFeedToFeed(feed))
+	}
+
+	respondWithJSON(w, http.StatusOK, feedList)
 }
 
 // func (apiCfg *apiConfig) getUserFeed(w http.ResponseWriter, r *http.Request, user database.User) {

@@ -18,15 +18,16 @@ func respondWithErrorJson(w http.ResponseWriter, status int, message string) {
 
 }
 
-/**respondWithJSON sends a JSON response with the specified status code and payload.
- * It sets the Content-Type header to application/json and handles any errors that occur during JSON mar
+/*
+*respondWithJSON sends a JSON response with the specified status code and payload.
+  - It sets the Content-Type header to application/json and handles any errors that occur during JSON mar
+
 shalling.
- * @param w http.ResponseWriter to write the response to.
- * @param status int HTTP status code to set for the response.
- * @param payload interface{} The data to be marshalled into JSON and sent in the response body.
+  - @param w http.ResponseWriter to write the response to.
+  - @param status int HTTP status code to set for the response.
+  - @param payload interface{} The data to be marshalled into JSON and sent in the response body.
 */
 func respondWithJSON(w http.ResponseWriter, status int, payload interface{}) {
-
 	data, err := json.Marshal(payload)
 
 	if err != nil {
